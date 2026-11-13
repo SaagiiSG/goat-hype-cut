@@ -1,0 +1,13 @@
+{
+  "name": "goat-hype-cut",
+  "owner": {
+    "name": "GOAT Academy"
+  },
+  "plugins": [
+    {
+      "name": "goat-hype-cut",
+      "source": "./",
+      "description": "Hype Cut · Хурдан хэмнэл: fast beat-cut look for Reels/TikTok. Mongolian-first."
+    }
+  ]
+}
