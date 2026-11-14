@@ -1,5 +1,7 @@
 # 🐐 Hype Cut · Хурдан хэмнэл
 
+<p align="center"><img src="assets/poster.jpg" width="300" alt="Hype Cut · Хурдан хэмнэл"></p>
+
 **Claude Code дотор ажилладаг видео эдитийн skill.** Хурдан таслалт, хүчтэй zoom, гүн хар өнгө. Хөгжмийн хэмнэлд тааруулж, эрч хүчтэй болгоно.
 
 Reels, TikTok-д бэлэн 1080×1920 MP4 гаргана. GOAT Academy-гийн 14 эдитийн стилийн нэг.
