@@ -1,0 +1,18 @@
+@font-face { font-family: "Tektur"; src: url("fonts/Tektur%5Bwdth,wght%5D.ttf"); font-weight: 400 900; font-stretch: 75% 100%; }
+
+html, body { margin: 0; width: 1080px; height: 1920px; overflow: hidden; background: #000; }
+#root { position: relative; width: 1080px; height: 1920px; overflow: hidden; background: #000; }
+
+/* #fx takes the SVG filters (split, pan blur) unscaled, so their 11 px and 24 px are screen pixels; their
+   region reaches 10% past the box, so the zoomed footage there feeds the edges instead of black.
+   #shake: the drop's 108% and jitter about the centre. #cam: zoom on the focus point, punch, push, pan. */
+#fx, #shake, #cam { position: absolute; inset: 0; }
+#clip { display: block; width: 1080px; height: 1920px; }
+#flash { position: absolute; inset: 0; background: #fff; opacity: 0; }
+
+/* preview: Tektur 900, white, letter-spacing -0.01em, a soft dark glow, centred, top at 18% (y 346) */
+#words > div { position: absolute; left: 540px; top: 346px; white-space: nowrap; text-align: center; opacity: 0;
+  font: 900 250px/1 "Tektur", sans-serif; letter-spacing: -0.01em; color: #fff;
+  text-shadow: 0 0 20px rgba(0, 0, 0, 0.35); }
+/* a second row sits under the first, centred, with v1's gap (1/12 of the size) */
+#words > div > div + div { margin-top: 0.08em; }
