@@ -108,27 +108,29 @@ export async function prepare(ctx) {
 
 const ms = (t) => Math.round(t * 1000) / 1000;
 
-// v1's events at half its levels (Saagii, 14 Nov: "tone down"); members raise them with "sfx": {"volume": …}.
-// A riser into the first drop, a boom and a hit on each drop, a hit on each punch and word slam, a whoosh into
-// each pan and a swish into the other cuts, never two closer than 0.4 s, so fast cuts don't machine-gun.
+// v1's events at about 30% of its levels (Saagii, 16 Nov: "bring the sounds effects down a bit"); members raise them
+// with "sfx": {"volume": …}. A boom on each drop, a hit on each punch and word slam, a riser into the first drop, a
+// whoosh into each pan and a swish into the other cuts. Never two within 0.5 s, kept in that order: a drop is one boom
+// (v1's hit on top of it is gone), a hit beats the riser, which then starts 0.5 s after it and still peaks on the drop
+// (none if under 0.6 s is left), and a cut's whoosh or swish plays only clear of all of them.
 export function sfx(plan, ctx) {
   const clips = plan.clips ?? [], cuts = ctx.cuts;
   const { drops } = hitTimes(clips, cuts);
-  const ev = drops.flatMap((at) => [{ sound: "boom", at, volume: 0.5 }, { sound: "hit", at, volume: 0.5 }]);
+  const ev = [], clash = (at) => ev.find((k) => Math.abs(k.at - at) < 0.5 - 1e-9), keep = (e) => !clash(e.at) && ev.push(e);
+  for (const at of drops) keep({ sound: "boom", at, volume: 0.3 });
+  const hits = [...new Set([...cuts.filter((_, i) => clips[i]?.move === "punch"),
+    ...(plan.texts ?? []).filter((t) => t.role === "word").map((t) => t.start ?? 0)].map(ms))].sort((a, b) => a - b);
+  for (const at of hits) keep({ sound: "hit", at, volume: 0.21 });
   if (drops.length && drops[0] >= 0.6) {
-    const d = Math.min(1.5, drops[0]);
-    ev.push({ sound: "riser", at: ms(drops[0] - d), dur: d, volume: 0.4 });
+    let at = drops[0] - Math.min(1.5, drops[0]), k;
+    while ((k = clash(at))) at = k.at + 0.5;
+    if (drops[0] - at >= 0.6 - 1e-9) ev.push({ sound: "riser", at: ms(at), dur: ms(drops[0] - at), volume: 0.24 });
   }
-  const hits = new Set([...cuts.filter((_, i) => clips[i]?.move === "punch"),
-    ...(plan.texts ?? []).filter((t) => t.role === "word").map((t) => t.start ?? 0)].map(ms));
-  let last = -1;
-  for (const t of [...new Set([...hits, ...cuts.slice(1).map(ms)])].sort((a, b) => a - b)) {
-    if (t - last < 0.399 || drops.some((d) => Math.abs(t - d) < 0.399)) continue;
-    last = t;
+  for (const t of cuts.slice(1).map(ms)) {
+    if (hits.includes(t)) continue; // a punch's cut is its hit
     const shot = cuts.findLastIndex((c) => c <= t + 1e-6);
-    if (hits.has(t)) ev.push({ sound: "hit", at: t, volume: 0.35 });
-    else if (clips[shot]?.move === "pan") ev.push({ sound: "whoosh", at: t, volume: 0.5 });
-    else ev.push({ sound: "swish", at: ms(Math.max(0, t - 0.17)), volume: 0.35 }); // its peak lands on the cut
+    keep(clips[shot]?.move === "pan" ? { sound: "whoosh", at: t, volume: 0.3 }
+      : { sound: "swish", at: ms(Math.max(0, t - 0.17)), volume: 0.21 }); // its peak lands on the cut
   }
-  return ev;
+  return ev.sort((a, b) => a.at - b.at);
 }

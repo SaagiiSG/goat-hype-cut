@@ -96,7 +96,7 @@ One row covers the screen from y 346 down to about y 420 (17 letters) to y 680 (
 **look** options:
 - `grade`: `punch` (default: contrast 1.25, crushed blacks, saturation 0.9) or `neon` (saturated and dark, only for night footage with real lights; on daylight it looks fake).
 
-**Auto sound effects** (soft, so they sit under the music; raise them with `"sfx": {"volume": 1.5}`): a riser that builds into the first drop; a boom and a hit on each drop; a hit on each `punch` and each word slam; a whoosh into each `pan`; a soft swish into the other cuts. Never two closer than 0.4 s, so fast cuts don't machine-gun.
+**Auto sound effects** (soft, so they sit under the music; raise them with `"sfx": {"volume": 1.5}`): a riser that builds into the first drop; a boom on each drop; a hit on each `punch` and each word slam; a whoosh into each `pan`; a soft swish into the other cuts. Never two within 0.5 s, so fast cuts don't machine-gun: a drop beats a hit, a hit beats the riser (which then starts later and still peaks on the drop), and a cut's whoosh or swish gives way to all of them.
 
 **music:** the cuts only land on the beat if the song's first beat is at its very start. If it isn't, trim it once: `ffmpeg -y -loglevel error -ss FIRST_BEAT_SECONDS -i raw/song.mp3 raw/song-start.mp3` and use that file.
 
